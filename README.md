@@ -2,7 +2,7 @@
 
 An experimental multiplayer/co-op mod for **DIVE or DIE: Children of Rain**, built using BepInEx 5, Harmony, and Steamworks.NET. Includes Steam lobby support and LAN networking code.
 
-> **Project status:** Early development (v0.0.1). Multiplayer synchronization is a work in progress; expect bugs and desyncs. Enemies are NOT synced.
+> **Project status:** Early development (v0.0.1). Multiplayer synchronization is a work in progress; expect bugs and desyncs. Back up your saves before testing.
 
 ## Features
 
@@ -32,21 +32,39 @@ To host, select **CO-OP → HOST**, then invite a friend through the Steam overl
 
 ## Build from source
 
-Open a Windows command prompt with `dotnet` on PATH:
+Building requires **Windows**, the **.NET SDK** with .NET Framework 4.8 targeting support, an installed copy of the game, and **BepInEx 5** with its core DLLs present.
+
+1. Place `Build.bat` next to `DiveOrDieCoop.csproj` in the repository root.
+2. Open `Build.bat` and change `GAME_ROOT` to your game installation directory:
+
+   ```bat
+   set "GAME_ROOT=C:\Steam\steamapps\common\DIVE or DIE - Children of Rain"
+   ```
+
+3. Run `Build.bat` from the repository root. Optionally override the configured path from Command Prompt:
+
+   ```bat
+   Build.bat "C:\Steam\steamapps\common\DIVE or DIE - Children of Rain"
+   ```
+
+**Compiled DLL:** `bin\Release\DiveOrDieCoop.dll` (relative to the repository root).
+
+The build script invokes `dotnet build` in Release configuration. **It does not automatically install or deploy the DLL.** To test your build, manually copy `bin\Release\DiveOrDieCoop.dll` into the game's `BepInEx\plugins` folder.
+
+### Troubleshooting the build
+
+- **`dotnet` not recognized:** Install the .NET SDK and ensure `dotnet` is on `PATH`.
+- **`Assembly-CSharp.dll` not found:** Check `GAME_ROOT` and ensure the game's `Dive or Die_Data\Managed` folder exists.
+- **`BepInEx.dll` not found:** Install and initialize BepInEx 5 in the same game directory first; verify `BepInEx\core` exists.
+- **Compiler errors or missing references:** Check the console output for the specific missing assembly or C# error. The batch window remains open after failure.
+
+The `.csproj` resolves game and BepInEx references through `GameManagedDir` and `BepInExCoreDir`. You can also invoke MSBuild directly with explicit reference paths:
 
 ```bat
-Build.bat "D:\Steam\steamapps\common\DIVE or DIE - Children of Rain"
+dotnet build DiveOrDieCoop.csproj -c Release -o bin\Release -p:GameManagedDir="C:\path\to\Dive or Die_Data\Managed" -p:BepInExCoreDir="C:\path\to\BepInEx\core"
 ```
 
-Or define `GAME_ROOT` and run `Build.bat` without arguments. The build outputs to `artifacts/Release/` and **does not modify your game installation**. To deploy manually, copy `artifacts/Release/DiveOrDieCoop.dll` to your game’s `BepInEx/plugins` directory.
-
-The `.csproj` uses references from `GameManagedDir` and `BepInExCoreDir`. Advanced usage:
-
-```bat
-dotnet build DiveOrDieCoop.csproj -c Release -p:GameManagedDir="C:\path\to\Game_Data\Managed" -p:BepInExCoreDir="C:\path\to\BepInEx\core"
-```
-
-The game and third-party DLLs are **not included** in this source repository. Build output is not a ready-made redistributable release package.
+Game and third-party DLLs are **not included** in the source repository. Build output is not a packaged release.
 
 ## Project structure
 
