@@ -2,45 +2,55 @@
 setlocal EnableExtensions
 cd /d "%~dp0"
 
-rem Usage: Build.bat "C:\path\to\game" (or set GAME_ROOT first)
+rem Change this to your DIVE or DIE installation folder.
+set "GAME_ROOT=C:\Steam\steamapps\common\DIVE or DIE - Children of Rain"
+
+rem Optional: pass a game directory as the first argument.
 if not "%~1"=="" set "GAME_ROOT=%~1"
-if not defined GAME_ROOT (
-    echo [ERROR] Game path missing.
-    echo Usage: Build.bat "C:\path\to\DIVE or DIE - Children of Rain"
-    echo Alternatively, set GAME_ROOT before running this script.
-    exit /b 1
-)
 
-set "MANAGED_DIR=%GAME_ROOT%\Dive or Die_Data\Managed"
-set "CORE_DIR=%GAME_ROOT%\BepInEx\core"
-set "OUTPUT_DIR=%~dp0artifacts\Release"
+set "GameManagedDir=%GAME_ROOT%\Dive or Die_Data\Managed"
+set "BepInExCoreDir=%GAME_ROOT%\BepInEx\core"
+set "OUTPUT_DIR=%~dp0bin\Release"
 
-if not exist "%MANAGED_DIR%\Assembly-CSharp.dll" (
-    echo [ERROR] Could not find Assembly-CSharp.dll in "%MANAGED_DIR%".
-    exit /b 1
+if not exist "%~dp0DiveOrDieCoop.csproj" (
+    echo [ERROR] DiveOrDieCoop.csproj not found next to Build.bat.
+    goto :fail
 )
-if not exist "%CORE_DIR%\BepInEx.dll" (
-    echo [ERROR] Could not find BepInEx.dll in "%CORE_DIR%".
-    echo Install BepInEx 5 and launch the game once.
-    exit /b 1
+if not exist "%GameManagedDir%\Assembly-CSharp.dll" (
+    echo [ERROR] Game assembly not found: "%GameManagedDir%\Assembly-CSharp.dll"
+    echo Check GAME_ROOT above.
+    goto :fail
 )
-
-where dotnet >nul 2>nul
+if not exist "%BepInExCoreDir%\BepInEx.dll" (
+    echo [ERROR] BepInEx assembly not found: "%BepInExCoreDir%\BepInEx.dll"
+    goto :fail
+)
+where dotnet >nul 2>&1
 if errorlevel 1 (
-    echo [ERROR] .NET SDK not found on PATH.
-    exit /b 1
+    echo [ERROR] dotnet SDK not found in PATH.
+    goto :fail
 )
-
-if not exist "%OUTPUT_DIR%" mkdir "%OUTPUT_DIR%"
-if errorlevel 1 exit /b 1
 
 echo Building DiveOrDieCoop...
-dotnet build "%~dp0DiveOrDieCoop.csproj" -c Release -p:GameManagedDir="%MANAGED_DIR%" -p:BepInExCoreDir="%CORE_DIR%" -p:OutDir="%OUTPUT_DIR%/"
-if errorlevel 1 (
-    echo [ERROR] Build failed.
-    exit /b 1
+echo Output: "%OUTPUT_DIR%"
+echo.
+
+rem The .csproj reads GameManagedDir and BepInExCoreDir from the environment.
+rem -o forces the final DLL into bin\Release (not into a game folder).
+dotnet build "%~dp0DiveOrDieCoop.csproj" -c Release -o "%OUTPUT_DIR%" --nologo
+if errorlevel 1 goto :fail
+if not exist "%OUTPUT_DIR%\DiveOrDieCoop.dll" (
+    echo [ERROR] Build finished but the DLL was not found in bin\Release.
+    goto :fail
 )
 
-echo [SUCCESS] Build artifacts: "%OUTPUT_DIR%"
-echo Deploy DiveOrDieCoop.dll to your game's BepInEx\plugins directory.
+echo.
+echo [SUCCESS] "%OUTPUT_DIR%\DiveOrDieCoop.dll"
+pause
 exit /b 0
+
+:fail
+echo.
+echo [ERROR] Compilation failed; see messages above.
+pause
+exit /b 1
