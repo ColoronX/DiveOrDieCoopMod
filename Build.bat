@@ -3,7 +3,7 @@ setlocal EnableExtensions
 cd /d "%~dp0"
 
 rem Change this to your DIVE or DIE installation folder.
-set "GAME_ROOT=C:\Steam\steamapps\common\DIVE or DIE - Children of Rain"
+set "GAME_ROOT=D:\Steam\steamapps\common\DIVE or DIE - Children of Rain"
 
 rem Optional: pass a game directory as the first argument.
 if not "%~1"=="" set "GAME_ROOT=%~1"

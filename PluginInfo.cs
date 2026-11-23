@@ -6,7 +6,7 @@ namespace DiveOrDieCoop
 
 		public const string NAME = "DiveOrDieCoop";
 
-		public const string VERSION = "0.0.1";
+		public const string VERSION = "0.0.2";
 	}
 }
 
