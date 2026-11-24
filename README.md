@@ -2,7 +2,7 @@
 
 An experimental multiplayer/co-op mod for **DIVE or DIE: Children of Rain**, built using BepInEx 5, Harmony, and Steamworks.NET. Includes Steam lobby support and LAN networking code.
 
-> **Project status:** Early development (v0.0.1). Multiplayer synchronization is a work in progress; expect bugs and desyncs. Back up your saves before testing.
+> **Project status:** Early development (v0.0.2). Multiplayer synchronization is a work in progress; expect bugs and desyncs. Back up your saves before testing.
 
 ## Features
 
@@ -94,5 +94,3 @@ Issues and pull requests are welcome. Include the game version, mod commit/versi
 ## Disclaimer
 
 Unofficial fan project; not affiliated with or endorsed by the game's developers, Steam, or BepInEx. This repository does not distribute game files.
-
-**License:** No license is currently granted for reuse or redistribution of the source. A license can be added by the maintainer when appropriate.
